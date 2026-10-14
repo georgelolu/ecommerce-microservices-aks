@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 app = FastAPI(title="E-Commerce Product Service", version="1.0.0")
 
@@ -25,4 +25,4 @@ def get_product(product_id: int):
         if product["id"] == product_id:
             return product
 
-    return {"error": "Product not found"}
+    raise HTTPException(status_code=404, detail="Product not found")
