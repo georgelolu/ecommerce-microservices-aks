@@ -1,0 +1,121 @@
+`frontend/index.html`
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>NovaCart | Modern Online Shopping</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: Arial, sans-serif;
+      background: #f5f7fb; color: #172033;
+    }
+    header {
+      background: #101827; color: white; padding: 22px 7%;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .brand { font-size: 25px; font-weight: 800; letter-spacing: -.8px; }
+    .brand span { color: #63e6be; }
+    header a { color: white; text-decoration: none; }
+    .hero {
+      padding: 76px 7%; color: white;
+      background: linear-gradient(120deg, #101827, #244e78);
+    }
+    .hero h1 { font-size: clamp(36px, 5vw, 58px); max-width: 650px; }
+    .hero p { max-width: 560px; line-height: 1.8; color: #dce8f6; }
+    main { padding: 42px 7%; }
+    .products {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 22px;
+    }
+    .card {
+      background: white; padding: 24px; border-radius: 16px;
+      border: 1px solid #e4e9f1; box-shadow: 0 5px 20px #17203308;
+    }
+    .art { font-size: 48px; background: #edf5ff; padding: 24px;
+      text-align: center; border-radius: 12px; }
+    .price { font-size: 23px; font-weight: 800; }
+    button {
+      border: 0; border-radius: 8px; background: #1769e0; color: white;
+      padding: 12px 16px; font-weight: 700; cursor: pointer;
+    }
+    footer { padding: 28px 7%; color: #697589; border-top: 1px solid #e4e9f1; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="#">Nova<span>Cart</span></a>
+    <div>🛒 Cart: <strong id="cart">0</strong></div>
+  </header>
+
+  <section class="hero">
+    <p>SMARTER SHOPPING. BETTER EVERY DAY.</p>
+    <h1>Everything you love, in one place.</h1>
+    <p>Explore everyday essentials and carefully selected technology,
+       powered by a cloud-native shopping platform.</p>
+  </section>
+
+  <main>
+    <h2>Featured products</h2>
+    <p>Discover our selection of everyday favourites.</p>
+    <div class="products" id="products">
+      <p id="status">Loading products…</p>
+    </div>
+  </main>
+
+  <footer>NovaCart Demo · Cloud-native e-commerce platform · DevOps portfolio project</footer>
+
+  <script>
+    let cartCount = 0;
+    const productsEl = document.getElementById("products");
+
+    async function loadProducts() {
+      try {
+        const response = await fetch("/api/products");
+        if (!response.ok) throw new Error("Product service unavailable");
+
+        const result = await response.json();
+        productsEl.replaceChildren();
+
+        result.items.forEach(product => {
+          const card = document.createElement("article");
+          card.className = "card";
+
+          const art = document.createElement("div");
+          art.className = "art";
+          art.textContent = "📦";
+
+          const name = document.createElement("h3");
+          name.textContent = product.name;
+
+          const price = document.createElement("p");
+          price.className = "price";
+          price.textContent = "$" + Number(product.price).toFixed(2);
+
+          const button = document.createElement("button");
+          button.textContent = "Add to cart";
+          button.addEventListener("click", () => {
+            cartCount++;
+            document.getElementById("cart").textContent = cartCount;
+          });
+
+          card.append(art, name, price, button);
+          productsEl.append(card);
+        });
+      } catch {
+        productsEl.textContent =
+          "Products are temporarily unavailable. Please try again later.";
+      }
+    }
+
+    loadProducts();
+  </script>
+</body>
+</html>
+```
+
+

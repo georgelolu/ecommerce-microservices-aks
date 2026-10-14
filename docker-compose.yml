@@ -1,0 +1,22 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - product
+
+  product:
+    build: ./services/product
+    expose:
+      - "8000"
+
+  order:
+    build: ./services/order
+    expose:
+      - "8000"
+
+  inventory:
+    build: ./services/inventory
+    expose:
+      - "8000"
