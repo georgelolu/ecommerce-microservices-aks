@@ -52,8 +52,22 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
 
-    # Deploy only after tests pass on the main branch.
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        # Deploy only when application or Kubernetes files change.
+    # Documentation-only and workflow-only pushes must not start an AKS deployment.
+    if: >-
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main' &&
+      (
+        contains(toJSON(github.event.commits.*.added), 'services/') ||
+        contains(toJSON(github.event.commits.*.modified), 'services/') ||
+        contains(toJSON(github.event.commits.*.removed), 'services/') ||
+        contains(toJSON(github.event.commits.*.added), 'frontend/') ||
+        contains(toJSON(github.event.commits.*.modified), 'frontend/') ||
+        contains(toJSON(github.event.commits.*.removed), 'frontend/') ||
+        contains(toJSON(github.event.commits.*.added), 'k8s/') ||
+        contains(toJSON(github.event.commits.*.modified), 'k8s/') ||
+        contains(toJSON(github.event.commits.*.removed), 'k8s/')
+      )
 
     env:
       AZURE_ACR_NAME: ${{ vars.AZURE_ACR_NAME }}
